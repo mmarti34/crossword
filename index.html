@@ -1,37 +1,58 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Chart</title>
+	<title>NYT Crossword Leaderboard</title>
 	<style>
+        table {
+                border-collapse: collapse;
+                border: 2px black solid;
+                font: 12px sans-serif;
+        }
+
+        td {
+                border: 1px black solid;
+                padding: 5px;
+        }
 		body{
 			margin: 0;
 			padding: 0;
+			background-color: #f1f7ff;
 		}
 		#linechart_material{
 			background-color: #f1f7ff;
 			padding: 20px;
-			width: 60%;
+			width: 100%;
 			min-height: 450px;
 			box-sizing: border-box;
 			overflow: auto;
 		}
-		@media(max-width: 992px){
+		@media(max-width: 1000px){
 			#linechart_material{
 				width: 100%;
-			}
+	    	}
+		}
+		h1 {
+		    font-family: "Courier New", Courier, monospace;
+		}
+		h2 {
+		    font-family: "Courier New", Courier, monospace;
 		}
 	</style>
-</head>
+
 <body>
+    <h1 align="center">NYTIMES MINI CROSSWORD LEADERBOARD</h1>
     <p style="font-family: Helvetica; color: #333; padding: 1em 2em; font-size: 12px">
       Source: NYTimes Mini Crossword
       <br>
       <a href="./Scoreboard.csv">Download data</a> powering this visualization.
+      <a href="./average_time.csv">Download average times</a>
+      
     </p>
-	<div id="linechart_material"></div>    
+	<div id="linechart_material"></div>  
+	<h2 align="center">Average Times</h2>
+	<p style="text-align:center;"><img src="test.png" alt="Average Times" align="middle"></p>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.8/jquery.csv.min.js"></script>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -88,7 +109,7 @@ function drawChart() {
           title: 'Seconds'
         },
         backgroundColor: "#f1f7ff",
-        colors:['rgb(99, 110, 250)','rgb(239, 85, 59)','rgb(0, 204, 150)','rgb(171, 99, 250)','rgb(25, 211, 243)']
+        colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(171, 99, 250)','rgb(0, 204, 150)','rgb(99, 110, 250)']
       };
 
       var chart = new google.charts.Line(document.getElementById('linechart_material'));
@@ -97,5 +118,6 @@ function drawChart() {
   });
 }
     </script>
+    
 </body>
 </html>
