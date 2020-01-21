@@ -1,0 +1,101 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Chart</title>
+	<style>
+		body{
+			margin: 0;
+			padding: 0;
+		}
+		#linechart_material{
+			background-color: #f1f7ff;
+			padding: 20px;
+			width: 60%;
+			min-height: 450px;
+			box-sizing: border-box;
+			overflow: auto;
+		}
+		@media(max-width: 992px){
+			#linechart_material{
+				width: 100%;
+			}
+		}
+	</style>
+</head>
+<body>
+    <p style="font-family: Helvetica; color: #333; padding: 1em 2em; font-size: 12px">
+      Source: NYTimes Mini Crossword
+      <br>
+      <a href="./Scoreboard.csv">Download data</a> powering this visualization.
+    </p>
+	<div id="linechart_material"></div>    
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.8/jquery.csv.min.js"></script>
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+	 <script type="text/javascript">
+     
+		google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+// this has to be a global function
+function drawChart() {
+   // grab the CSV
+   $.get("Scoreboard.csv", function(csvString) {
+    var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+    let labelColumns = [], tempCol = [], dataColumn = [];
+    let colFirstName = arrayData[1][0];
+    labelColumns.push(colFirstName);
+    // Label Names
+    for(let i=2; i<arrayData.length; i++){
+        let cvsName = arrayData[i][0];
+        if(cvsName == colFirstName){
+            break;
+        }
+        labelColumns.push(cvsName);
+    }
+    let dataLength = labelColumns.length, dataCount = 1;
+    // Data of Chart
+    for(let i=1; i<arrayData.length; i++){
+        let dateCol = arrayData[i][2];
+        tempCol.push(arrayData[i][1]);
+        if(i == dataLength){
+            tempCol.unshift(dateCol);
+            dataColumn.push(tempCol);
+            tempCol = [];
+            dataCount += 1;
+            dataLength = labelColumns.length * dataCount;
+        }
+    }
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Name');
+      Array.from(labelColumns).forEach(function(label){
+        data.addColumn('number', label);
+      })
+
+      data.addRows(dataColumn);
+      var options = {
+        chart: {
+          title: 'Leaderboard Over Time'
+        },
+        hAxis: {
+          title: 'Date'
+        },
+        vAxis: {
+          title: 'Seconds'
+        },
+        backgroundColor: "#f1f7ff",
+        colors:['rgb(99, 110, 250)','rgb(239, 85, 59)','rgb(0, 204, 150)','rgb(171, 99, 250)','rgb(25, 211, 243)']
+      };
+
+      var chart = new google.charts.Line(document.getElementById('linechart_material'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+  });
+}
+    </script>
+</body>
+</html>
