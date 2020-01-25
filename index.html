@@ -33,6 +33,19 @@
 				width: 100%;
 	    	}
 		}
+		#linechart_material2{
+			background-color: #f1f7ff;
+			padding: 20px;
+			width: 100%;
+			min-height: 450px;
+			box-sizing: border-box;
+			overflow: auto;
+		}
+		@media(max-width: 1000px){
+			#linechart_material2{
+				width: 100%;
+	    	}
+		}
 		h1 {
 		    font-family: "Courier New", Courier, monospace;
 		}
@@ -42,17 +55,27 @@
 	</style>
 
 <body>
-    <h1 align="center">NYTIMES MINI CROSSWORD LEADERBOARD</h1>
+    <h1 align="center">NEW YORK TIMES MINI CROSSWORD LEADERBOARD</h1>
     <p style="font-family: Helvetica; color: #333; padding: 1em 2em; font-size: 12px">
-      Source: NYTimes Mini Crossword
+      Source: NYT Mini Crossword
       <br>
       <a href="./Scoreboard.csv">Download data</a> powering this visualization.
-      <a href="./average_time.csv">Download average times</a>
       
     </p>
 	<div id="linechart_material"></div>  
-	<h2 align="center">Average Times</h2>
-	<p style="text-align:center;"><img src="test.png" alt="Average Times" align="middle"></p>
+
+	<h2 align="center">Average times</h2>
+	<p style="text-align:center;"><img src="test.png" alt="Average Times" align="middle">
+	</p>
+	<p style="text-align:center;">
+	<div id="linechart_material2"></div>  
+
+	<h2 align="center">Spotify</h2>
+	<p style="text-align:center;">
+	<iframe src="https://open.spotify.com/embed/playlist/0uz4N920OwRf2DPDCc8kTD" width="300" height="300" align='center' frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+	</p>
+	<p style="text-align:center;">
+	</p>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-csv/1.0.8/jquery.csv.min.js"></script>
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
@@ -113,6 +136,68 @@ function drawChart() {
       };
 
       var chart = new google.charts.Line(document.getElementById('linechart_material'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+  });
+}
+    </script>
+    
+    	 <script type="text/javascript">
+     
+		google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+// this has to be a global function
+function drawChart() {
+   // grab the CSV
+   $.get("Scoreboard_average.csv", function(csvString) {
+    var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+    let labelColumns = [], tempCol = [], dataColumn = [];
+    let colFirstName = arrayData[1][0];
+    labelColumns.push(colFirstName);
+    // Label Names
+    for(let i=2; i<arrayData.length; i++){
+        let cvsName = arrayData[i][0];
+        if(cvsName == colFirstName){
+            break;
+        }
+        labelColumns.push(cvsName);
+    }
+    let dataLength = labelColumns.length, dataCount = 1;
+    // Data of Chart
+    for(let i=1; i<arrayData.length; i++){
+        let dateCol = arrayData[i][2];
+        tempCol.push(arrayData[i][1]);
+        if(i == dataLength){
+            tempCol.unshift(dateCol);
+            dataColumn.push(tempCol);
+            tempCol = [];
+            dataCount += 1;
+            dataLength = labelColumns.length * dataCount;
+        }
+    }
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Name');
+      Array.from(labelColumns).forEach(function(label){
+        data.addColumn('number', label);
+      })
+
+      data.addRows(dataColumn);
+      var options = {
+        chart: {
+          title: 'Average Times Over Time'
+        },
+        hAxis: {
+          title: 'Date'
+        },
+        vAxis: {
+          title: 'Seconds'
+        },
+        backgroundColor: "#f1f7ff",
+        colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(0, 204, 150)','rgb(99, 110, 250)']
+      };
+
+      var chart = new google.charts.Line(document.getElementById('linechart_material2'));
 
       chart.draw(data, google.charts.Line.convertOptions(options));
   });
