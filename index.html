@@ -20,7 +20,7 @@
 			padding: 0;
 			background-color: #f1f7ff;
 		}
-		#linechart_material{
+		#scatterplot_material{
 			background-color: #f1f7ff;
 			padding: 20px;
 			width: 100%;
@@ -29,7 +29,7 @@
 			overflow: auto;
 		}
 		@media(max-width: 1000px){
-			#linechart_material{
+			#scatterplot_material{
 				width: 100%;
 	    	}
 		}
@@ -62,12 +62,11 @@
       <a href="./Scoreboard.csv">Download data</a> powering this visualization.
       
     </p>
-	<div id="linechart_material"></div>  
+	<div id="scatterplot_material"></div>  
 
 	<h2 align="center">Average times</h2>
 	<p style="text-align:center;"><img src="test.png" alt="Average Times" align="middle">
-	</p>    
-	<p style="text-align:center;">*denotes player pauses daily crossword to think about clues</p>
+	</p> 
 	<p style="text-align:center;">
 	<div id="linechart_material2"></div>  
 	<h2 align="center">Spotify</h2>
@@ -82,7 +81,7 @@
 
 	 <script type="text/javascript">
      
-		google.charts.load('current', {'packages':['line']});
+		google.charts.load('current', {'packages':['line', 'scatter']});
       google.charts.setOnLoadCallback(drawChart);
 
 // this has to be a global function
@@ -135,9 +134,9 @@ function drawChart() {
         colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(171, 99, 250)','rgb(0, 204, 150)','rgb(99, 110, 250)']
       };
 
-      var chart = new google.charts.Line(document.getElementById('linechart_material'));
+      var chart = new google.charts.Scatter(document.getElementById('scatterplot_material'));
 
-      chart.draw(data, google.charts.Line.convertOptions(options));
+      chart.draw(data, google.charts.Scatter.convertOptions(options));
   });
 }
     </script>
