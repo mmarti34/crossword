@@ -100,10 +100,10 @@ for item in list_scores:
         names.append(name)
     
     #print(names)
-    rank = item.find('p', class_ = 'lbd-score__rank')
+    '''rank = item.find('p', class_ = 'lbd-score__rank')
     rank = int_test(rank.text)
     ranks.append(rank)
-    
+    '''
     
     time = item.find('p', class_ = 'lbd-score__time')
     
@@ -122,18 +122,18 @@ for item in list_scores:
     #print(names, ranks, times, dates)
 
 
-scoreboard = pd.DataFrame({'name': names, 'time': times, 'date': dates, 'rank': ranks})
+scoreboard = pd.DataFrame({'name': names, 'time': times, 'date': dates})
 scoreboard = scoreboard.sort_values(by=['name'])
 
 
-scoreboard.to_csv('Scoreboard.csv', sep=',', mode='a', index=False, header=False)
+#scoreboard.to_csv('Scoreboard.csv', sep=',', mode='a', index=False, header=False)
 
 average = pd.read_csv('Scoreboard.csv')
 average = average[(average != 0).all(1)]
 average = average.groupby(['Name']).mean()
 average = average.sort_values(by='Time')
-#print(average)
-average.to_csv('average_time.csv', sep=',', index=True,header=True)
+print(average)
+#average.to_csv('average_time.csv', sep=',', index=True,header=True)
 
 avg = pd.read_csv("average_time.csv")
 avg = avg.round(2)
@@ -145,7 +145,7 @@ avg2 = avg[['Name','Time']]
 dates.pop(0)
 avg2['Date'] = dates
 avg2 = avg2.sort_values(by='Name')
-avg2.to_csv('Scoreboard_average.csv', sep=',', mode='a', index=False, header=False)
+#avg2.to_csv('Scoreboard_average.csv', sep=',', mode='a', index=False, header=False)
 
 window = pd.read_csv("Scoreboard.csv")
 start_date = datetime.datetime.now() + datetime.timedelta(-30)
@@ -156,4 +156,4 @@ window = window.groupby(['Name']).mean()
 window['Date'] = dates
 window2 = window[['Time', 'Date']]
 window2 = window2.sort_values(by='Name')
-window2.to_csv('window_average.csv', sep=',', mode='a', index=False, header=False)
+#window2.to_csv('window_average.csv', sep=',', mode='a', index=False, header=False)
