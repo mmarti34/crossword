@@ -41,8 +41,23 @@
 			box-sizing: border-box;
 			overflow: auto;
 		}
+		
 		@media(max-width: 1000px){
 			#linechart_material2{
+				width: 100%;
+	    	}
+		}
+		#linechart_material3{
+			background-color: #f1f7ff;
+			padding: 20px;
+			width: 100%;
+			min-height: 450px;
+			box-sizing: border-box;
+			overflow: auto;
+		}
+		
+		@media(max-width: 1000px){
+			#linechart_material3{
 				width: 100%;
 	    	}
 		}
@@ -65,13 +80,19 @@
 	<div id="scatterplot_material"></div>  
 
 	<h2 align="center">Average times</h2>
-	<p style="text-align:center;"><img src="test.png" alt="Average Times" align="middle">
-	</p> 
+	<p style="text-align:center;"><img src="test.png" alt="Average Times" align="middle"> 	</p> 
+
+	<p style="text-align:center;">*denotes player pauses daily crossword to think about clues</p>
+
 	<p style="text-align:center;">
 	<div id="linechart_material2"></div>  
+	<h2 align="center">Average times (30 day window)</h2>
+	<p style="text-align:center;"><img src="window.png" alt="Average Times" align="middle"> 	</p> 
+	<div id="linechart_material3"></div>  
+
 	<h2 align="center">Spotify</h2>
 	<p style="text-align:center;">
-	<iframe src="https://open.spotify.com/embed/playlist/0uz4N920OwRf2DPDCc8kTD" width="300" height="300" align='center' frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
+	<iframe src="https://open.spotify.com/embed/album/1s6codM2ZAB008t9GTyaEk" width="300" height="380" align = "center" frameborder="0" allowtransparency="true" allow="encrypted-media"></iframe>
 	</p>
 	<p style="text-align:center;">
 	</p>
@@ -131,7 +152,7 @@ function drawChart() {
           title: 'Seconds'
         },
         backgroundColor: "#f1f7ff",
-        colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(171, 99, 250)','rgb(0, 204, 150)','rgb(99, 110, 250)']
+        colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(171, 99, 250)','rgb(232, 228, 0)', 'rgb(0, 204, 150)','rgb(99, 110, 250)']
       };
 
       var chart = new google.charts.Scatter(document.getElementById('scatterplot_material'));
@@ -193,10 +214,72 @@ function drawChart() {
           title: 'Seconds'
         },
         backgroundColor: "#f1f7ff",
-        colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(0, 204, 150)','rgb(99, 110, 250)']
+        colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(171, 99, 250)','rgb(0, 204, 150)','rgb(99, 110, 250)']
       };
 
       var chart = new google.charts.Line(document.getElementById('linechart_material2'));
+
+      chart.draw(data, google.charts.Line.convertOptions(options));
+  });
+}
+    </script>
+    
+    <script type="text/javascript">
+     
+		google.charts.load('current', {'packages':['line']});
+      google.charts.setOnLoadCallback(drawChart);
+
+// this has to be a global function
+function drawChart() {
+   // grab the CSV
+   $.get("window_average.csv", function(csvString) {
+    var arrayData = $.csv.toArrays(csvString, {onParseValue: $.csv.hooks.castToScalar});
+    let labelColumns = [], tempCol = [], dataColumn = [];
+    let colFirstName = arrayData[1][0];
+    labelColumns.push(colFirstName);
+    // Label Names
+    for(let i=2; i<arrayData.length; i++){
+        let cvsName = arrayData[i][0];
+        if(cvsName == colFirstName){
+            break;
+        }
+        labelColumns.push(cvsName);
+    }
+    let dataLength = labelColumns.length, dataCount = 1;
+    // Data of Chart
+    for(let i=1; i<arrayData.length; i++){
+        let dateCol = arrayData[i][2];
+        tempCol.push(arrayData[i][1]);
+        if(i == dataLength){
+            tempCol.unshift(dateCol);
+            dataColumn.push(tempCol);
+            tempCol = [];
+            dataCount += 1;
+            dataLength = labelColumns.length * dataCount;
+        }
+    }
+      var data = new google.visualization.DataTable();
+      data.addColumn('string', 'Name');
+      Array.from(labelColumns).forEach(function(label){
+        data.addColumn('number', label);
+      })
+
+      data.addRows(dataColumn);
+      var options = {
+        chart: {
+          title: 'Average Times Over Time (30 day window)'
+        },
+        hAxis: {
+          title: 'Date'
+        },
+        vAxis: {
+          title: 'Seconds'
+        },
+        backgroundColor: "#f1f7ff",
+        colors:['rgb(255, 128, 0)','rgb(239, 85, 59)','rgb(171, 99, 250)','rgb(0, 204, 150)','rgb(99, 110, 250)']
+      };
+
+      var chart = new google.charts.Line(document.getElementById('linechart_material3'));
 
       chart.draw(data, google.charts.Line.convertOptions(options));
   });
