@@ -72,7 +72,7 @@ def render_mpl_table(data, col_width=3.0, row_height=0.625, font_size=14,
     return ax
 
 
-cj = browser_cookie.load()
+cj =  cj = browser_cookie.firefox()
 r = requests.get('https://www.nytimes.com/puzzles/leaderboards', cookies=cj)
 soup = BeautifulSoup(r.text, 'html.parser')
 list_scores = soup.find_all('div', class_ = 'lbd-score')
@@ -90,11 +90,17 @@ for item in list_scores:
     elif name == 'Erin ':
         name = 'Erin'
         names.append(name)
-    elif name == 'Joe ':
-        name = 'Joe'
-        names.append(name)
     elif name == 'Emilyshira ':
         name = 'Emilyshira'
+        names.append(name)
+    elif name == 'dannyfitz77 ':
+        name = 'Danny Fitz'
+        names.append(name)
+    elif name == 'Jmfrio ':
+        name = 'Jessie Frio FF'
+        names.append(name)
+    elif name == 'Adam Turner ':
+        name = 'Adam Turner'
         names.append(name)
     else:    
         names.append(name)
@@ -121,19 +127,30 @@ for item in list_scores:
     #print(dates)
     #print(names, ranks, times, dates)
 
+"""
+SCOREBOARD OVER TIME
+"""
 
 scoreboard = pd.DataFrame({'name': names, 'time': times, 'date': dates})
 scoreboard = scoreboard.sort_values(by=['name'])
 
 
-#scoreboard.to_csv('Scoreboard.csv', sep=',', mode='a', index=False, header=False)
+scoreboard.to_csv('Scoreboard.csv', sep=',', mode='a', index=False, header=False)
+
+    
+'''     print('okay'+name)
+    else:
+        print('not okay'+name)
+'''
+"""
+AVERAGE
+"""
 
 average = pd.read_csv('Scoreboard.csv')
 average = average[(average != 0).all(1)]
 average = average.groupby(['Name']).mean()
 average = average.sort_values(by='Time')
-print(average)
-#average.to_csv('average_time.csv', sep=',', index=True,header=True)
+average.to_csv('average_time.csv', sep=',', index=True,header=True)
 
 avg = pd.read_csv("average_time.csv")
 avg = avg.round(2)
@@ -141,19 +158,35 @@ avg1 = avg[['Name','Time']]
 x = render_mpl_table(avg1, header_columns=0, col_width=2.0).get_figure()
 x.savefig("test.png")
 
+"""
+AVERAGE OVER TIME
+"""
+
 avg2 = avg[['Name','Time']]
-dates.pop(0)
 avg2['Date'] = dates
 avg2 = avg2.sort_values(by='Name')
-#avg2.to_csv('Scoreboard_average.csv', sep=',', mode='a', index=False, header=False)
+avg2.to_csv('Scoreboard_average.csv', sep=',', mode='a', index=False, header=False)
+
+
+"""
+WINDOW AVERAGE OVER TIME
+"""
 
 window = pd.read_csv("Scoreboard.csv")
-start_date = datetime.datetime.now() + datetime.timedelta(-30)
+start_date = datetime.datetime.now() + datetime.timedelta(-31)
 window['Date'] = pd.to_datetime(window['Date'])
 window = window[(window['Date'] >= start_date)]
 window = window[(window != 0).all(1)]
 window = window.groupby(['Name']).mean()
 window['Date'] = dates
-window2 = window[['Time', 'Date']]
-window2 = window2.sort_values(by='Name')
-#window2.to_csv('window_average.csv', sep=',', mode='a', index=False, header=False)
+window = window.sort_values(by='Name')
+window.to_csv('window_average.csv', sep=',', mode='a', index=True, header=False)
+window.to_csv('window_average_picture.csv', sep=',', index=True, header=True)
+
+
+avg2 = pd.read_csv("window_average_picture.csv")
+avg2 = avg2.round(2)
+avg3 = avg2[['Name','Time']]
+avg3 = avg3.sort_values(by='Time')
+x1 = render_mpl_table(avg3, header_columns=0, col_width=2.0).get_figure()
+x1.savefig("window.png")
